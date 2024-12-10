@@ -1,1 +1,331 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+// Binary Tree Node
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    Node(int val) : data(val), left(nullptr), right(nullptr) {}
+};
+
+// Function Prototypes
+void binaryTreeMenu();
+void binarySearchTreeMenu();
+void heapMenu();
+
+// Binary Tree Operations
+Node* insertBinaryTree(Node* root, int value);
+void traversePreorder(Node* root);
+void traverseInorder(Node* root);
+void traversePostorder(Node* root);
+bool searchBinaryTree(Node* root, int value);
+Node* deleteBinaryTree(Node* root, int key);
+
+// Binary Search Tree (BST) Operations
+Node* insertBST(Node* root, int value);
+bool searchBST(Node* root, int value);
+Node* deleteBST(Node* root, int value);
+Node* findMin(Node* root);
+
+// Heap Operations
+void insertHeap(vector<int>& heap, int value);
+void heapify(vector<int>& heap, int n, int i);
+void buildMaxHeap(vector<int>& heap);
+void buildMinHeap(vector<int>& heap);
+void printHeap(vector<int>& heap);
+
+int main() {
+    int choice;
+    while (true) {
+        cout << "\n==== Interactive Data Structures Menu ====\n";
+        cout << "1. Binary Tree Operations\n";
+        cout << "2. Binary Search Tree (BST) Operations\n";
+        cout << "3. Heap Operations\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: binaryTreeMenu(); break;
+            case 2: binarySearchTreeMenu(); break;
+            case 3: heapMenu(); break;
+            case 4: exit(0);
+            default: cout << "Invalid choice. Please try again.\n";
+        }
+    }
+    return 0;
+}
+
+// ========================== Binary Tree Menu ==========================
+void binaryTreeMenu() {
+    Node* root = nullptr;
+    int choice, value;
+    while (true) {
+        cout << "\n--- Binary Tree Operations ---\n";
+        cout << "1. Insert Node\n";
+        cout << "2. Preorder Traversal\n";
+        cout << "3. Inorder Traversal\n";
+        cout << "4. Postorder Traversal\n";
+        cout << "5. Search Node\n";
+        cout << "6. Delete Node\n";
+        cout << "7. Back to Main Menu\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                root = insertBinaryTree(root, value);
+                break;
+            case 2:
+                traversePreorder(root);
+                break;
+            case 3:
+                traverseInorder(root);
+                break;
+            case 4:
+                traversePostorder(root);
+                break;
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> value;
+                cout << (searchBinaryTree(root, value) ? "Found" : "Not Found") << endl;
+                break;
+            case 6:
+                cout << "Enter value to delete: ";
+                cin >> value;
+                root = deleteBinaryTree(root, value);
+                break;
+            case 7: return;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    }
+}
+
+// ========================== Binary Tree Functions ==========================
+Node* insertBinaryTree(Node* root, int value) {
+    if (!root) return new Node(value);
+    if (!root->left)
+        root->left = insertBinaryTree(root->left, value);
+    else
+        root->right = insertBinaryTree(root->right, value);
+    return root;
+}
+
+void traversePreorder(Node* root) {
+    if (!root) return;
+    cout << root->data << " ";
+    traversePreorder(root->left);
+    traversePreorder(root->right);
+}
+
+void traverseInorder(Node* root) {
+    if (!root) return;
+    traverseInorder(root->left);
+    cout << root->data << " ";
+    traverseInorder(root->right);
+}
+
+void traversePostorder(Node* root) {
+    if (!root) return;
+    traversePostorder(root->left);
+    traversePostorder(root->right);
+    cout << root->data << " ";
+}
+
+bool searchBinaryTree(Node* root, int value) {
+    if (!root) return false;
+    if (root->data == value) return true;
+    return searchBinaryTree(root->left, value) || searchBinaryTree(root->right, value);
+}
+
+Node* deleteBinaryTree(Node* root, int key) {
+    if (!root) return nullptr;
+    if (root->data == key) {
+        if (!root->left && !root->right) {
+            delete root;
+            return nullptr;
+        }
+    }
+    root->left = deleteBinaryTree(root->left, key);
+    root->right = deleteBinaryTree(root->right, key);
+    return root;
+}
+
+// ========================== Binary Search Tree Menu ==========================
+void binarySearchTreeMenu() {
+    Node* root = nullptr;
+    int choice, value;
+    while (true) {
+        cout << "\n--- Binary Search Tree (BST) Operations ---\n";
+        cout << "1. Insert Node\n";
+        cout << "2. Preorder Traversal\n";
+        cout << "3. Inorder Traversal\n";
+        cout << "4. Postorder Traversal\n";
+        cout << "5. Search Node\n";
+        cout << "6. Delete Node\n";
+        cout << "7. Back to Main Menu\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                root = insertBST(root, value);
+                break;
+            case 2:
+                traversePreorder(root);
+                break;
+            case 3:
+                traverseInorder(root);
+                break;
+            case 4:
+                traversePostorder(root);
+                break;
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> value;
+                cout << (searchBST(root, value) ? "Found" : "Not Found") << endl;
+                break;
+            case 6:
+                cout << "Enter value to delete: ";
+                cin >> value;
+                root = deleteBST(root, value);
+                break;
+            case 7: return;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    }
+}
+
+// ========================== BST Functions ==========================
+Node* insertBST(Node* root, int value) {
+    if (!root) return new Node(value);
+    if (value < root->data)
+        root->left = insertBST(root->left, value);
+    else
+        root->right = insertBST(root->right, value);
+    return root;
+}
+
+bool searchBST(Node* root, int value) {
+    if (!root) return false;
+    if (root->data == value) return true;
+    return value < root->data ? searchBST(root->left, value) : searchBST(root->right, value);
+}
+
+Node* deleteBST(Node* root, int value) {
+    if (!root) return nullptr;
+    if (value < root->data)
+        root->left = deleteBST(root->left, value);
+    else if (value > root->data)
+        root->right = deleteBST(root->right, value);
+    else {
+        if (!root->left) {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        } else if (!root->right) {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+        Node* temp = findMin(root->right);
+        root->data = temp->data;
+        root->right = deleteBST(root->right, temp->data);
+    }
+    return root;
+}
+
+Node* findMin(Node* root) {
+    while (root && root->left) root = root->left;
+    return root;
+}
+
+// ========================== Heap Menu ==========================
+void heapMenu() {
+    vector<int> heap;
+    int choice, value;
+    while (true) {
+        cout << "\n--- Heap Operations ---\n";
+        cout << "1. Insert Node\n";
+        cout << "2. Build Max-Heap\n";
+        cout << "3. Build Min-Heap\n";
+        cout << "4. Print Heap\n";
+        cout << "5. Back to Main Menu\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                insertHeap(heap, value);
+                break;
+            case 2:
+                buildMaxHeap(heap);
+                cout << "Max-Heap built.\n";
+                break;
+            case 3:
+                buildMinHeap(heap);
+                cout << "Min-Heap built.\n";
+                break;
+            case 4:
+                printHeap(heap);
+                break;
+            case 5: return;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    }
+}
+
+// ========================== Heap Functions ==========================
+void insertHeap(vector<int>& heap, int value) {
+    heap.push_back(value);
+    int i = heap.size() - 1;
+    while (i > 0 && heap[(i - 1) / 2] < heap[i]) {
+        swap(heap[(i - 1) / 2], heap[i]);
+        i = (i - 1) / 2;
+    }
+}
+
+void heapify(vector<int>& heap, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && heap[left] > heap[largest]) largest = left;
+    if (right < n && heap[right] > heap[largest]) largest = right;
+    if (largest != i) {
+        swap(heap[i], heap[largest]);
+        heapify(heap, n, largest);
+    }
+}
+
+void buildMaxHeap(vector<int>& heap) {
+    for (int i = heap.size() / 2 - 1; i >= 0; --i)
+        heapify(heap, heap.size(), i);
+}
+
+void buildMinHeap(vector<int>& heap) {
+    for (int i = 0; i < heap.size(); ++i) {
+        for (int j = 0; j < heap.size() - 1; ++j) {
+            if (heap[j] > heap[j + 1]) swap(heap[j], heap[j + 1]);
+        }
+    }
+}
+
+void printHeap(vector<int>& heap) {
+    cout << "Heap: ";
+    for (int i : heap) cout << i << " ";
+    cout << endl;
+}
 
